@@ -1,6 +1,8 @@
 # 🌟 Stellar Soroban Token Staking Platform
 
 ## 📖 Project Description
+<img width="1917" height="937" alt="Screenshot 2026-03-25 113111" src="https://github.com/user-attachments/assets/061f3e87-1cc2-4e4c-a44b-e0b3a7ee54a4" />
+
 This project is a basic decentralized token staking smart contract built using Soroban on the Stellar network. It allows users to stake tokens, track their staking data, and withdraw their funds securely.
 
 The goal of this project is to provide a foundational staking mechanism that can be extended with rewards, penalties, and advanced DeFi features.
