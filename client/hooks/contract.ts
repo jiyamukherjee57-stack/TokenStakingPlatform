@@ -26,7 +26,7 @@ import {
 
 /** Your deployed Soroban contract ID */
 export const CONTRACT_ADDRESS =
-  "CDJVMAX34YRCQ5JFC6SIOQOVSUY6XWEFYJOLF3SBCKU7CMI3IAP6HPWN";
+  "CBIYNHB3IFVTCDW5MU5IJCBPEOWALU6LBMBGMRZNZN44CLYRJIT3V4HY";
 
 /** Network passphrase (testnet by default) */
 export const NETWORK_PASSPHRASE = Networks.TESTNET;
@@ -211,56 +211,57 @@ export function toScValBool(value: boolean): xdr.ScVal {
   return nativeToScVal(value, { type: "bool" });
 }
 
+export function toScValU64(value: bigint): xdr.ScVal {
+  return nativeToScVal(value, { type: "u64" });
+}
+
 // ============================================================
-// Supply Chain Tracker — Contract Methods
+// Token Staking Platform — Contract Methods
 // ============================================================
 
 /**
- * Add a product to the supply chain.
- * Calls: add_product(product_id: String, origin: String)
+ * Stake tokens.
+ * Calls: stake(user: Address, amount: i128)
  */
-export async function addProduct(
+export async function stake(
   caller: string,
-  productId: string,
-  origin: string
+  amount: bigint
 ) {
   return callContract(
-    "add_product",
-    [toScValString(productId), toScValString(origin)],
+    "stake",
+    [toScValAddress(caller), toScValI128(amount)],
     caller,
     true
   );
 }
 
 /**
- * Update a product's status.
- * Calls: update_status(product_id: String, new_status: String)
+ * Withdraw staked tokens.
+ * Calls: withdraw(user: Address) -> i128
+ * Returns: The amount withdrawn
  */
-export async function updateProductStatus(
-  caller: string,
-  productId: string,
-  newStatus: string
+export async function withdraw(
+  caller: string
 ) {
   return callContract(
-    "update_status",
-    [toScValString(productId), toScValString(newStatus)],
+    "withdraw",
+    [toScValAddress(caller)],
     caller,
     true
   );
 }
 
 /**
- * Get product details (read-only).
- * Calls: get_product(product_id: String) -> Map<Symbol, String>
- * Returns: { origin: string, status: string } or null
+ * Get stake info (read-only).
+ * Calls: get_stake(user: Address) -> Option<StakeInfo>
+ * Returns: { amount: bigint, timestamp: number } or null
  */
-export async function getProduct(
-  productId: string,
-  caller?: string
+export async function getStake(
+  caller: string
 ) {
   return readContract(
-    "get_product",
-    [toScValString(productId)],
+    "get_stake",
+    [toScValAddress(caller)],
     caller
   );
 }

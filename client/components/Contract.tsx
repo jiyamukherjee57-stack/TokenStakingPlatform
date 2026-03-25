@@ -2,9 +2,9 @@
 
 import { useState, useCallback } from "react";
 import {
-  addProduct,
-  updateProductStatus,
-  getProduct,
+  stake,
+  withdraw,
+  getStake,
   CONTRACT_ADDRESS,
 } from "@/hooks/contract";
 import { AnimatedCard } from "@/components/ui/animated-card";
@@ -23,48 +23,63 @@ function SpinnerIcon() {
   );
 }
 
-function PackageIcon() {
+function CoinsIcon({ className }: { className?: string }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16.5 9.4 7.55 4.24" />
-      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-      <polyline points="3.29 7 12 12 20.71 7" />
-      <line x1="12" y1="22" x2="12" y2="12" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
+      <path d="M12 18V6" />
     </svg>
   );
 }
 
-function RefreshIcon() {
+function ArrowUpIcon({ className }: { className?: string }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-      <path d="M21 3v5h-5" />
-      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-      <path d="M8 16H3v5" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 19V5" />
+      <path d="m5 12 7-7 7 7" />
     </svg>
   );
 }
 
-function SearchIcon() {
+function ArrowDownIcon({ className }: { className?: string }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 5v14" />
+      <path d="m19 12-7 7-7-7" />
     </svg>
   );
 }
 
-function CheckIcon() {
+function WalletIcon({ className }: { className?: string }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+      <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1" />
+    </svg>
+  );
+}
+
+function ClockIcon({ className }: { className?: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}
+
+function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <polyline points="20 6 9 17 4 12" />
     </svg>
   );
 }
 
-function AlertIcon() {
+function AlertIcon({ className }: { className?: string }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <circle cx="12" cy="12" r="10" />
       <line x1="12" y1="8" x2="12" y2="12" />
       <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -118,17 +133,9 @@ function MethodSignature({
   );
 }
 
-// ── Status Config ────────────────────────────────────────────
-
-const STATUS_CONFIG: Record<string, { color: string; bg: string; border: string; dot: string; variant: "success" | "warning" | "info" }> = {
-  Created: { color: "text-[#fbbf24]", bg: "bg-[#fbbf24]/10", border: "border-[#fbbf24]/20", dot: "bg-[#fbbf24]", variant: "warning" },
-  Shipped: { color: "text-[#4fc3f7]", bg: "bg-[#4fc3f7]/10", border: "border-[#4fc3f7]/20", dot: "bg-[#4fc3f7]", variant: "info" },
-  Delivered: { color: "text-[#34d399]", bg: "bg-[#34d399]/10", border: "border-[#34d399]/20", dot: "bg-[#34d399]", variant: "success" },
-};
-
 // ── Main Component ───────────────────────────────────────────
 
-type Tab = "track" | "add" | "update";
+type Tab = "stake" | "withdraw" | "view";
 
 interface ContractUIProps {
   walletAddress: string | null;
@@ -136,92 +143,99 @@ interface ContractUIProps {
   isConnecting: boolean;
 }
 
+interface StakeInfo {
+  amount: bigint;
+  timestamp: bigint;
+}
+
 export default function ContractUI({ walletAddress, onConnect, isConnecting }: ContractUIProps) {
-  const [activeTab, setActiveTab] = useState<Tab>("track");
+  const [activeTab, setActiveTab] = useState<Tab>("stake");
   const [error, setError] = useState<string | null>(null);
   const [txStatus, setTxStatus] = useState<string | null>(null);
 
-  const [addId, setAddId] = useState("");
-  const [addOrigin, setAddOrigin] = useState("");
-  const [isAdding, setIsAdding] = useState(false);
+  const [stakeAmount, setStakeAmount] = useState("");
+  const [isStaking, setIsStaking] = useState(false);
 
-  const [updateId, setUpdateId] = useState("");
-  const [updateStatusVal, setUpdateStatusVal] = useState("");
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
-  const [trackId, setTrackId] = useState("");
-  const [isTracking, setIsTracking] = useState(false);
-  const [productData, setProductData] = useState<Record<string, string> | null>(null);
+  const [isViewing, setIsViewing] = useState(false);
+  const [stakeData, setStakeData] = useState<StakeInfo | null>(null);
 
   const truncate = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
-  const handleAddProduct = useCallback(async () => {
+  const handleStake = useCallback(async () => {
     if (!walletAddress) return setError("Connect wallet first");
-    if (!addId.trim() || !addOrigin.trim()) return setError("Fill in all fields");
+    if (!stakeAmount.trim()) return setError("Enter an amount to stake");
+    const amount = BigInt(stakeAmount);
+    if (amount <= BigInt(0)) return setError("Amount must be positive");
     setError(null);
-    setIsAdding(true);
+    setIsStaking(true);
     setTxStatus("Awaiting signature...");
     try {
-      await addProduct(walletAddress, addId.trim(), addOrigin.trim());
-      setTxStatus("Product registered on-chain!");
-      setAddId("");
-      setAddOrigin("");
+      await stake(walletAddress, amount);
+      setTxStatus("Tokens staked successfully!");
+      setStakeAmount("");
       setTimeout(() => setTxStatus(null), 5000);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Transaction failed");
       setTxStatus(null);
     } finally {
-      setIsAdding(false);
+      setIsStaking(false);
     }
-  }, [walletAddress, addId, addOrigin]);
+  }, [walletAddress, stakeAmount]);
 
-  const handleUpdateStatus = useCallback(async () => {
+  const handleWithdraw = useCallback(async () => {
     if (!walletAddress) return setError("Connect wallet first");
-    if (!updateId.trim() || !updateStatusVal.trim()) return setError("Fill in all fields");
     setError(null);
-    setIsUpdating(true);
+    setIsWithdrawing(true);
     setTxStatus("Awaiting signature...");
     try {
-      await updateProductStatus(walletAddress, updateId.trim(), updateStatusVal.trim());
-      setTxStatus("Status updated on-chain!");
-      setUpdateId("");
-      setUpdateStatusVal("");
+      await withdraw(walletAddress);
+      setTxStatus("Tokens withdrawn successfully!");
+      setStakeData(null);
       setTimeout(() => setTxStatus(null), 5000);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Transaction failed");
       setTxStatus(null);
     } finally {
-      setIsUpdating(false);
+      setIsWithdrawing(false);
     }
-  }, [walletAddress, updateId, updateStatusVal]);
+  }, [walletAddress]);
 
-  const handleTrackProduct = useCallback(async () => {
-    if (!trackId.trim()) return setError("Enter a product ID");
+  const handleViewStake = useCallback(async () => {
+    if (!walletAddress) return setError("Connect wallet first");
     setError(null);
-    setIsTracking(true);
-    setProductData(null);
+    setIsViewing(true);
+    setStakeData(null);
     try {
-      const result = await getProduct(trackId.trim(), walletAddress || undefined);
-      if (result && typeof result === "object") {
-        const mapped: Record<string, string> = {};
-        for (const [k, v] of Object.entries(result)) {
-          mapped[String(k)] = String(v);
-        }
-        setProductData(mapped);
+      const result = await getStake(walletAddress);
+      if (result && typeof result === "object" && "amount" in result) {
+        setStakeData(result as unknown as StakeInfo);
       } else {
-        setError("Product not found");
+        setError("No stake found");
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Query failed");
     } finally {
-      setIsTracking(false);
+      setIsViewing(false);
     }
-  }, [trackId, walletAddress]);
+  }, [walletAddress]);
+
+  const formatAmount = (amount: bigint | undefined) => {
+    if (amount === undefined || amount === null) return "0";
+    return amount.toString();
+  };
+
+  const formatTimestamp = (ts: bigint | undefined) => {
+    if (ts === undefined || ts === null) return "-";
+    const date = new Date(Number(ts) * 1000);
+    return date.toLocaleString();
+  };
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode; color: string }[] = [
-    { key: "track", label: "Track", icon: <SearchIcon />, color: "#4fc3f7" },
-    { key: "add", label: "Register", icon: <PackageIcon />, color: "#7c6cf0" },
-    { key: "update", label: "Update", icon: <RefreshIcon />, color: "#fbbf24" },
+    { key: "stake", label: "Stake", icon: <ArrowUpIcon />, color: "#34d399" },
+    { key: "withdraw", label: "Withdraw", icon: <ArrowDownIcon />, color: "#fbbf24" },
+    { key: "view", label: "View Stake", icon: <WalletIcon />, color: "#4fc3f7" },
   ];
 
   return (
@@ -241,7 +255,7 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
       {txStatus && (
         <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#34d399]/15 bg-[#34d399]/[0.05] px-4 py-3 backdrop-blur-sm shadow-[0_0_30px_rgba(52,211,153,0.05)] animate-slide-down">
           <span className="text-[#34d399]">
-            {txStatus.includes("on-chain") || txStatus.includes("updated") ? <CheckIcon /> : <SpinnerIcon />}
+            {txStatus.includes("successfully") || txStatus.includes("updated") ? <CheckIcon /> : <SpinnerIcon />}
           </span>
           <span className="text-sm text-[#34d399]/90">{txStatus}</span>
         </div>
@@ -253,21 +267,15 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#7c6cf0]/20 to-[#4fc3f7]/20 border border-white/[0.06]">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#7c6cf0]">
-                  <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
-                  <path d="M15 18H9" />
-                  <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
-                  <circle cx="17" cy="18" r="2" />
-                  <circle cx="7" cy="18" r="2" />
-                </svg>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#34d399]/20 to-[#4fc3f7]/20 border border-white/[0.06]">
+                <CoinsIcon className="text-[#34d399]" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white/90">Supply Chain Tracker</h3>
+                <h3 className="text-sm font-semibold text-white/90">Token Staking Platform</h3>
                 <p className="text-[10px] text-white/25 font-mono mt-0.5">{truncate(CONTRACT_ADDRESS)}</p>
               </div>
             </div>
-            <Badge variant="info" className="text-[10px]">Soroban</Badge>
+            <Badge variant="success" className="text-[10px]">Soroban</Badge>
           </div>
 
           {/* Tabs */}
@@ -275,7 +283,7 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
             {tabs.map((t) => (
               <button
                 key={t.key}
-                onClick={() => { setActiveTab(t.key); setError(null); setProductData(null); }}
+                onClick={() => { setActiveTab(t.key); setError(null); }}
                 className={cn(
                   "relative flex items-center gap-2 px-5 py-3.5 text-sm font-medium transition-all",
                   activeTab === t.key ? "text-white/90" : "text-white/35 hover:text-white/55"
@@ -295,121 +303,99 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
 
           {/* Tab Content */}
           <div className="p-6">
-            {/* Track */}
-            {activeTab === "track" && (
+            {/* Stake */}
+            {activeTab === "stake" && (
               <div className="space-y-5">
-                <MethodSignature name="get_product" params="(product_id: String)" returns="-> Map<Symbol, String>" color="#4fc3f7" />
-                <Input label="Product ID" value={trackId} onChange={(e) => setTrackId(e.target.value)} placeholder="e.g. PROD-001" />
-                <ShimmerButton onClick={handleTrackProduct} disabled={isTracking} shimmerColor="#4fc3f7" className="w-full">
-                  {isTracking ? <><SpinnerIcon /> Querying...</> : <><SearchIcon /> Track Product</>}
-                </ShimmerButton>
-
-                {productData && (
-                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden animate-fade-in-up">
-                    <div className="border-b border-white/[0.06] px-4 py-3 flex items-center justify-between">
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-white/25">Product Details</span>
-                      {(() => {
-                        const status = productData.status || "Unknown";
-                        const cfg = STATUS_CONFIG[status];
-                        return cfg ? (
-                          <Badge variant={cfg.variant}>
-                            <span className={cn("h-1.5 w-1.5 rounded-full", cfg.dot)} />
-                            {status}
-                          </Badge>
-                        ) : (
-                          <Badge>{status}</Badge>
-                        );
-                      })()}
-                    </div>
-                    <div className="p-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-white/35">Product ID</span>
-                        <span className="font-mono text-sm text-white/80">{trackId}</span>
-                      </div>
-                      {Object.entries(productData).map(([key, val]) => (
-                        <div key={key} className="flex items-center justify-between">
-                          <span className="text-xs text-white/35 capitalize">{key}</span>
-                          <span className="font-mono text-sm text-white/80">{val}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Add */}
-            {activeTab === "add" && (
-              <div className="space-y-5">
-                <MethodSignature name="add_product" params="(product_id: String, origin: String)" color="#7c6cf0" />
-                <Input label="Product ID" value={addId} onChange={(e) => setAddId(e.target.value)} placeholder="e.g. PROD-001" />
-                <Input label="Origin" value={addOrigin} onChange={(e) => setAddOrigin(e.target.value)} placeholder="e.g. Factory A, Shanghai" />
+                <MethodSignature name="stake" params="(user: Address, amount: i128)" returns="-> void" color="#34d399" />
+                <Input 
+                  label="Amount (stroops)" 
+                  value={stakeAmount} 
+                  onChange={(e) => setStakeAmount(e.target.value)} 
+                  placeholder="e.g. 1000000" 
+                  type="number"
+                />
+                <p className="text-xs text-white/25">Enter the amount in stroops (1 XLM = 10,000,000 stroops)</p>
                 {walletAddress ? (
-                  <ShimmerButton onClick={handleAddProduct} disabled={isAdding} shimmerColor="#7c6cf0" className="w-full">
-                    {isAdding ? <><SpinnerIcon /> Registering...</> : <><PackageIcon /> Register Product</>}
+                  <ShimmerButton onClick={handleStake} disabled={isStaking} shimmerColor="#34d399" className="w-full">
+                    {isStaking ? <><SpinnerIcon /> Staking...</> : <><ArrowUpIcon /> Stake Tokens</>}
                   </ShimmerButton>
                 ) : (
                   <button
                     onClick={onConnect}
                     disabled={isConnecting}
-                    className="w-full rounded-xl border border-dashed border-[#7c6cf0]/20 bg-[#7c6cf0]/[0.03] py-4 text-sm text-[#7c6cf0]/60 hover:border-[#7c6cf0]/30 hover:text-[#7c6cf0]/80 active:scale-[0.99] transition-all disabled:opacity-50"
+                    className="w-full rounded-xl border border-dashed border-[#34d399]/20 bg-[#34d399]/[0.03] py-4 text-sm text-[#34d399]/60 hover:border-[#34d399]/30 hover:text-[#34d399]/80 active:scale-[0.99] transition-all disabled:opacity-50"
                   >
-                    Connect wallet to register products
+                    Connect wallet to stake
                   </button>
                 )}
               </div>
             )}
 
-            {/* Update */}
-            {activeTab === "update" && (
+            {/* Withdraw */}
+            {activeTab === "withdraw" && (
               <div className="space-y-5">
-                <MethodSignature name="update_status" params="(product_id: String, new_status: String)" color="#fbbf24" />
-                <Input label="Product ID" value={updateId} onChange={(e) => setUpdateId(e.target.value)} placeholder="e.g. PROD-001" />
-
-                <div className="space-y-2">
-                  <label className="block text-[11px] font-medium uppercase tracking-wider text-white/30">New Status</label>
-                  <div className="flex gap-2">
-                    {(["Shipped", "Delivered"] as const).map((s) => {
-                      const cfg = STATUS_CONFIG[s];
-                      const active = updateStatusVal === s;
-                      return (
-                        <button
-                          key={s}
-                          onClick={() => setUpdateStatusVal(s)}
-                          className={cn(
-                            "flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all active:scale-95",
-                            active
-                              ? `${cfg.border} ${cfg.bg} ${cfg.color}`
-                              : "border-white/[0.06] bg-white/[0.02] text-white/35 hover:text-white/55 hover:border-white/[0.1]"
-                          )}
-                        >
-                          <span className={cn("h-1.5 w-1.5 rounded-full transition-colors", active ? cfg.dot : "bg-white/20")} />
-                          {s}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <div className="group rounded-xl border border-white/[0.06] bg-white/[0.02] p-px transition-all focus-within:border-[#fbbf24]/30 focus-within:shadow-[0_0_20px_rgba(251,191,36,0.08)]">
-                    <input
-                      value={updateStatusVal}
-                      onChange={(e) => setUpdateStatusVal(e.target.value)}
-                      placeholder="Or type a custom status..."
-                      className="w-full rounded-[11px] bg-transparent px-4 py-3 font-mono text-sm text-white/90 placeholder:text-white/15 outline-none"
-                    />
-                  </div>
-                </div>
-
+                <MethodSignature name="withdraw" params="(user: Address)" returns="-> i128" color="#fbbf24" />
+                <p className="text-sm text-white/50">Withdraw your staked tokens from the contract.</p>
                 {walletAddress ? (
-                  <ShimmerButton onClick={handleUpdateStatus} disabled={isUpdating} shimmerColor="#fbbf24" className="w-full">
-                    {isUpdating ? <><SpinnerIcon /> Updating...</> : <><RefreshIcon /> Update Status</>}
+                  <ShimmerButton onClick={handleWithdraw} disabled={isWithdrawing} shimmerColor="#fbbf24" className="w-full">
+                    {isWithdrawing ? <><SpinnerIcon /> Withdrawing...</> : <><ArrowDownIcon /> Withdraw All</>}
                   </ShimmerButton>
                 ) : (
                   <button
                     onClick={onConnect}
                     disabled={isConnecting}
-                    className="w-full rounded-xl border border-dashed border-[#fbbf24]/20 bg-[#fbbf24]/[0.03] py-4 text-sm text-[#fbbf24]/60 hover:border-[#fbbf24]/30 hover:text-[#fbbf24]/80 active:scale-[0.99] transition-all disabled:opacity-50"
+                    className="w-full rounded-xl border border-dashed border-[#fbbf24]/20 bg-[#fbbf24]/[0.03] py-4 text-sm text-[#fbbf24]/60 hover:border-[#fbbf24]/30 hover:text-[#fbbf21]/80 active:scale-[0.99] transition-all disabled:opacity-50"
                   >
-                    Connect wallet to update status
+                    Connect wallet to withdraw
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* View Stake */}
+            {activeTab === "view" && (
+              <div className="space-y-5">
+                <MethodSignature name="get_stake" params="(user: Address)" returns="-> Option<StakeInfo>" color="#4fc3f7" />
+                <p className="text-sm text-white/50">View your current stake information.</p>
+                {walletAddress ? (
+                  <>
+                    <ShimmerButton onClick={handleViewStake} disabled={isViewing} shimmerColor="#4fc3f7" className="w-full">
+                      {isViewing ? <><SpinnerIcon /> Fetching...</> : <><WalletIcon /> View My Stake</>}
+                    </ShimmerButton>
+
+                    {stakeData && (
+                      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden animate-fade-in-up">
+                        <div className="border-b border-white/[0.06] px-4 py-3 flex items-center justify-between">
+                          <span className="text-[10px] font-medium uppercase tracking-wider text-white/25">Your Stake</span>
+                          <Badge variant="success">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#34d399]" />
+                            Active
+                          </Badge>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-white/35 flex items-center gap-1.5">
+                              <CoinsIcon /> Amount
+                            </span>
+                            <span className="font-mono text-sm text-white/80">{formatAmount(stakeData.amount)} stroops</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-white/35 flex items-center gap-1.5">
+                              <ClockIcon /> Staked At
+                            </span>
+                            <span className="font-mono text-sm text-white/80">{formatTimestamp(stakeData.timestamp)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <button
+                    onClick={onConnect}
+                    disabled={isConnecting}
+                    className="w-full rounded-xl border border-dashed border-[#4fc3f7]/20 bg-[#4fc3f7]/[0.03] py-4 text-sm text-[#4fc3f7]/60 hover:border-[#4fc3f7]/30 hover:text-[#4fc3f7]/80 active:scale-[0.99] transition-all disabled:opacity-50"
+                  >
+                    Connect wallet to view stake
                   </button>
                 )}
               </div>
@@ -418,15 +404,22 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
 
           {/* Footer */}
           <div className="border-t border-white/[0.04] px-6 py-3 flex items-center justify-between">
-            <p className="text-[10px] text-white/15">Supply Chain Tracker &middot; Soroban</p>
+            <p className="text-[10px] text-white/15">Token Staking Platform &middot; Soroban</p>
             <div className="flex items-center gap-2">
-              {["Created", "Shipped", "Delivered"].map((s, i) => (
-                <span key={s} className="flex items-center gap-1.5">
-                  <span className={cn("h-1 w-1 rounded-full", STATUS_CONFIG[s]?.dot ?? "bg-white/20")} />
-                  <span className="font-mono text-[9px] text-white/15">{s}</span>
-                  {i < 2 && <span className="text-white/10 text-[8px]">&rarr;</span>}
-                </span>
-              ))}
+              <span className="flex items-center gap-1.5">
+                <span className="h-1 w-1 rounded-full bg-[#34d399]" />
+                <span className="font-mono text-[9px] text-white/15">Stake</span>
+              </span>
+              <span className="text-white/10 text-[8px]">&rarr;</span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-1 w-1 rounded-full bg-[#fbbf24]" />
+                <span className="font-mono text-[9px] text-white/15">Earn</span>
+              </span>
+              <span className="text-white/10 text-[8px]">&rarr;</span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-1 w-1 rounded-full bg-[#4fc3f7]" />
+                <span className="font-mono text-[9px] text-white/15">Withdraw</span>
+              </span>
             </div>
           </div>
         </AnimatedCard>
